@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz App</title>
+  <style>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.quiz-container {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  width: 80%;
+  max-width: 600px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+.quiz-question {
+  margin: 20px 0;
+}
+
+.quiz-options label {
+  display: block;
+  margin: 5px 0;
+}
+
+button {
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+#results {
+  margin-top: 20px;
+  padding: 10px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  display: none;
+}
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <h1>Quiz App</h1>
+    <div id="quiz"></div>
+    <button id="next" style="display:none;">Next</button>
+    <button id="submit" style="display:none;">Submit Quiz</button>
+    <div id="results"></div>
+  </div>
+  <script>
+
+const quizData = [
+  { question: "What is the capital of France?", options: ["Paris", "London", "Berlin", "Madrid"], correct: 0, explanation: "Paris is the capital and most populous city of France." },
+  { question: "Which planet is known as the Red Planet?", options: ["Earth", "Mars", "Jupiter", "Venus"], correct: 1, explanation: "Mars is often called the Red Planet because of its reddish appearance." },
+  { question: "What is the chemical symbol for water?", options: ["O2", "H2O", "CO2", "HO"], correct: 1, explanation: "H2O is the chemical formula for water." },
+  { question: "Who wrote 'Romeo and Juliet'?", options: ["Charles Dickens", "William Shakespeare", "J.K. Rowling", "Mark Twain"], correct: 1, explanation: "William Shakespeare is the playwright of 'Romeo and Juliet'." },
+  { question: "Which gas do plants absorb for photosynthesis?", options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Helium"], correct: 2, explanation: "Plants absorb carbon dioxide for photosynthesis." },
+  { question: "What is the largest mammal?", options: ["Elephant", "Blue Whale", "Giraffe", "Orca"], correct: 1, explanation: "The blue whale is the largest mammal on Earth." },
+  { question: "What is the square root of 64?", options: ["6", "7", "8", "9"], correct: 2, explanation: "The square root of 64 is 8." },
+  { question: "Which is the longest river in the world?", options: ["Nile", "Amazon", "Yangtze", "Mississippi"], correct: 0, explanation: "The Nile is widely regarded as the longest river in the world." },
+  { question: "What is the boiling point of water in Celsius?", options: ["100°C", "0°C", "50°C", "150°C"], correct: 0, explanation: "Water boils at 100°C under standard atmospheric pressure." },
+  { question: "Which planet is closest to the sun?", options: ["Venus", "Earth", "Mercury", "Mars"], correct: 2, explanation: "Mercury is the closest planet to the Sun." },
+  { question: "What is the chemical formula for salt?", options: ["NaCl", "HCl", "KCl", "CaCl"], correct: 0, explanation: "NaCl is the chemical formula for salt." },
+  { question: "Who discovered gravity?", options: ["Newton", "Einstein", "Galileo", "Tesla"], correct: 0, explanation: "Isaac Newton discovered gravity when an apple fell from a tree." },
+  { question: "What is the fastest land animal?", options: ["Cheetah", "Lion", "Horse", "Elephant"], correct: 0, explanation: "The cheetah is the fastest land animal." },
+  { question: "What is the smallest prime number?", options: ["1", "2", "3", "5"], correct: 1, explanation: "2 is the smallest prime number." },
+  { question: "Which country is known as the Land of the Rising Sun?", options: ["China", "Japan", "Korea", "India"], correct: 1, explanation: "Japan is known as the Land of the Rising Sun." }
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+const quizContainer = document.getElementById("quiz");
+const nextButton = document.getElementById("next");
+const submitButton = document.getElementById("submit");
+const resultsContainer = document.getElementById("results");
+
+function showQuestion() {
+  const data = quizData[currentQuestionIndex];
+  quizContainer.innerHTML = `
+    <div class="quiz-question">
+      <h3>${currentQuestionIndex + 1}. ${data.question}</h3>
+      <div class="quiz-options">
+        ${data.options.map((option, i) => `
+          <label>
+            <input type="radio" name="question" value="${i}">
+            ${option}
+          </label>`).join("")}
+      </div>
+    </div>
+  `;
+}
+
+function handleNext() {
+  const selectedOption = document.querySelector('input[name="question"]:checked');
+  if (!selectedOption) {
+    alert("Please select an answer before proceeding.");
+    return;
+  }
+  const userAnswer = parseInt(selectedOption.value);
+  if (userAnswer === quizData[currentQuestionIndex].correct) {
+    score++;
+  }
+  currentQuestionIndex++;
+  if (currentQuestionIndex < quizData.length) {
+    showQuestion();
+    if (currentQuestionIndex % 5 === 0) {
+      nextButton.style.display = "none";
+      submitButton.style.display = "block";
+    }
+  } else {
+    showResults();
+  }
+}
+
+function showResults() {
+  quizContainer.style.display = "none";
+  nextButton.style.display = "none";
+  submitButton.style.display = "none";
+  resultsContainer.style.display = "block";
+  resultsContainer.innerHTML = `
+    <h2>Quiz Completed!</h2>
+    <p>Your Score: ${score} / ${quizData.length}</p>
+    <p>Thank you for participating!</p>
+  `;
+}
+
+nextButton.addEventListener("click", handleNext);
+submitButton.addEventListener("click", () => {
+  currentQuestionIndex++;
+  showQuestion();
+  nextButton.style.display = "block";
+  submitButton.style.display = "none";
+});
+
+showQuestion();
+nextButton.style.display = "block";
+  </script>
+</body>
+</html>
